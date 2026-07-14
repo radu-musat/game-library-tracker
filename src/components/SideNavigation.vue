@@ -3,6 +3,7 @@ import { Calendar } from '@lucide/vue'
 import { House } from '@lucide/vue'
 import { CirclePlus } from '@lucide/vue'
 import { History } from '@lucide/vue'
+import { Timeline } from '@lucide/vue'
 </script>
 
 <template>
@@ -20,6 +21,9 @@ import { History } from '@lucide/vue'
       </RouterLink>
       <RouterLink :to="{ name: 'CurrentMonth' }" class="btn">
         <History />
+      </RouterLink>
+      <RouterLink :to="{ name: 'Timeline' }" class="btn">
+        <Timeline />
       </RouterLink>
     </aside>
   </div>
