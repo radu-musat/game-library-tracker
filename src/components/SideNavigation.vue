@@ -16,14 +16,11 @@ import { Timeline } from '@lucide/vue'
       <RouterLink :to="{ name: 'CurrentMonth' }" class="btn">
         <Calendar />
       </RouterLink>
-      <RouterLink :to="{ name: 'Create' }" class="btn">
-        <CirclePlus />
-      </RouterLink>
-      <RouterLink :to="{ name: 'CurrentMonth' }" class="btn">
-        <History />
-      </RouterLink>
       <RouterLink :to="{ name: 'Timeline' }" class="btn">
         <Timeline />
+      </RouterLink>
+      <RouterLink :to="{ name: 'Create' }" class="btn">
+        <CirclePlus />
       </RouterLink>
     </aside>
   </div>
