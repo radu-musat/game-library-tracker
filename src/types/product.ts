@@ -2,17 +2,18 @@ export interface Product {
   name: string;
   price: number;
   platform: string;
-  purchaseDate: string;
-  isPurchased: false;
-  isMainQuest: false;
-  isSidequest: false;
+  purchaseDate?: string;
+  isPurchased: boolean;
+  isMainQuest: boolean;
+  id: string;
 }
 
 export interface Purchase {
   items: Product[];
-  totalCost: number
+  totalCost: number;
+  id: string;
 }
 
 export interface RecordState {
-  records: Purchase[]
+  records: Purchase[];
 }

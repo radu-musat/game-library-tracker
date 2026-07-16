@@ -3,7 +3,7 @@
 <template>
   <div class="navbar bg-base-100">
     <div class="flex-1">
-      <a class="btn btn-ghost text-xl">GLPTM (game library purchase timeline manager)</a>
+      <a class="btn btn-ghost text-xl">GLT (game library tracker)</a>
     </div>
     <div class="flex gap-2">
       <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
