@@ -42,12 +42,23 @@ const [purchased, purchasedAttrs] = defineField('isPurchased');
 
 const isCreateMode = ref(true);
 const editId = ref<string | null>(null);
+
+//TODO: REPLACE WITH DATEPICKER
+function getRandomYear() {
+  const min = 2000;
+  const max = 2026;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+let randomMonthIndex = Math.floor(Math.random() * 12);
+let randomDate = new Date(getRandomYear(), randomMonthIndex, 1).toISOString().split('T')[0];
+
 const purchase: Ref<Purchase> = ref({
   items: [
     {
       name: 'Daa',
       price: 222,
       platform: 'Steam',
+      purchaseDate: randomDate,
       isMainQuest: true,
       isPurchased: true,
       id: crypto.randomUUID(),
@@ -60,10 +71,15 @@ const purchase: Ref<Purchase> = ref({
 const totalCost = computed(() => purchase.value.items.reduce((acc, item) => acc + item.price, 0));
 
 const onSubmit = handleSubmit(() => {
+  //TODO: REPLACE WITH DATEPICKER
+  randomMonthIndex = Math.floor(Math.random() * 12);
+  randomDate = new Date(getRandomYear(), randomMonthIndex, 1).toISOString().split('T')[0];
+
   const recordData: Product = {
     name: name.value,
     price: price.value,
     platform: platform.value,
+    purchaseDate: randomDate,
     isMainQuest: mainQuest.value,
     isPurchased: purchased.value,
     id: crypto.randomUUID(),
@@ -214,7 +230,7 @@ const { prettifyKey } = utils;
               </div>
               <div>
                 <div>{{ purchaseItem.name }}</div>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap">
                   <template v-for="(value, key) in purchaseItem" :key="key">
                     <div
                       class="flex gap-1 items-center text-xs"
@@ -223,7 +239,7 @@ const { prettifyKey } = utils;
                       <div class="uppercase font-semibold opacity-60">
                         {{ prettifyKey(key, 'is') }} :
                       </div>
-                      <span class="">
+                      <span>
                         <template v-if="typeof value === 'boolean'">
                           <CircleCheck v-if="value" />
                           <CircleX v-else />
@@ -236,7 +252,7 @@ const { prettifyKey } = utils;
                   </template>
                 </div>
               </div>
-              <div class="self-end flex gap-2">
+              <div class="self-start pt-6 flex gap-2">
                 <Pencil class="cursor-pointer" @click.prevent="onEditSelect(purchaseItem.id)" />
                 <Trash2 class="cursor-pointer" @click.prevent="onDelete(purchaseItem.id)" />
               </div>
