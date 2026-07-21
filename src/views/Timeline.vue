@@ -1,12 +1,66 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue';
+import { useRecordStore } from '@/stores/record';
+import type { Product } from '@/types/product';
+
+const recordStore = useRecordStore();
+//console.log('🔵 Component loaded');
+const groupedGames = computed(() => {
+  const allGames: (Product & {purchaseDate: string})[] = [];
+  //console.log('📦 Store data:', recordStore.activeRecords);
+  recordStore.activeRecords.forEach(group => {
+    group.items.forEach(game => {
+      if (game.purchaseDate) {
+        allGames.push(game as Product & { purchaseDate: string});
+      };
+    });
+  });
+  //console.log('🟡 BEFORE SORT:', allGames.map(g => g.purchaseDate));
+  allGames.sort((a, b) => {
+    return new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime();
+  });
+  //console.log('🟢 AFTER SORT:', allGames.map(g => g.purchaseDate));
+
+  const grouped: Record<string, (Product & { purchaseDate: string })[]> = {};
+
+  allGames.forEach(game => {
+  const date = new Date(game.purchaseDate);
+  const key = date.toLocaleString('default', {month: 'long', year: 'numeric'});
+
+  if (!grouped[key]) {
+    grouped[key] = [];
+  }
+
+  grouped[key].push(game);
+  });
+
+  const result = Object.keys(grouped).map(monthKey => ({
+    month: monthKey,
+    games: grouped[monthKey]
+  }));
+  console.log('✅ Reached the end!');
+  console.log(result);
+  return result;
+});
+
+
+
+//console.log(allGames);
+
+
+
+
+
 </script>
 
 <template>
   <section class="px-3 pt-6 bg-gray-100 grow">
-    <h1 class="text-5xl mb-8 font-medium">Timeline {{ value }}</h1>
+    <h1 class="text-5xl mb-8 font-medium">Number of records: {{ recordStore.activeRecords.length }}</h1>
+    
     <ul class="timeline timeline-vertical">
-      <li v-for="(value, key) in items" :key="key">
+      <!-- Loop 1: Months -->
+      <li v-for="monthGroup in groupedGames" :key="monthGroup.month">
+        <!-- Timeline dot -->
         <div class="timeline-middle">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +75,29 @@ import { ref } from 'vue'
             />
           </svg>
         </div>
-        <div class="timeline-end timeline-box">{{ value.name }}</div>
+
+        <!-- Card for this month -->
+        <div class="timeline-end">
+          <div class="card bg-base-100 shadow-md">
+            <div class="card-body">
+              <h2 class="text-2xl font-bold">{{ monthGroup.month }}</h2>
+              <p class="text-sm text-gray-500">{{ monthGroup.games?.length || 0 }} games</p>
+              
+              <div class="divider"></div>
+              
+              <!-- Loop 2: Games in this month -->
+              <div 
+                v-for="game in monthGroup.games" 
+                :key="game.id" 
+                class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"
+              >
+                <span>{{ game.name }}</span>
+                <span>£{{ game.price }}</span>
+                <span class="text-sm text-gray-500">{{ game.platform }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
         <hr />
       </li>
     </ul>
