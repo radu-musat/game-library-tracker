@@ -12,7 +12,6 @@ import 'cally';
 
 const recordStore = useRecordStore();
 const toastStore = useToastStore();
-const purchaseDate = ref('');
 
 const schema = toTypedSchema(
   yup.object({
@@ -55,8 +54,7 @@ const purchase: Ref<Purchase> = ref({
 const totalCost = computed(() => purchase.value.items.reduce((acc, item) => acc + item.price, 0));
 const onDateChange = (e: Event) => {
   const target = e.target as HTMLElement & { value: string };
-
-  purchaseDate.value = target.value;
+  purchase.value.purchaseDate = target.value;
 
   const popover = document.getElementById('cally-popover1') as HTMLElement & {
     hidePopover?: () => void;
@@ -222,7 +220,7 @@ const { prettifyKey } = utils;
                 style="anchor-name: --cally1"
                 type="button"
               >
-                {{ purchaseDate || 'Pick a date' }}
+                {{ purchase.purchaseDate || 'Pick a date' }}
               </button>
 
               <div
@@ -285,7 +283,7 @@ const { prettifyKey } = utils;
         <div class="p-4 mt-4">
           <button
             class="btn btn-neutral"
-            :disabled="!purchase.items.length || !isCreateMode || !purchaseDate"
+            :disabled="!purchase.items.length || !isCreateMode || !purchase.purchaseDate"
             @click.prevent="addRecord"
           >
             Add record
