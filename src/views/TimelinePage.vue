@@ -34,8 +34,6 @@ const groupedGames = computed(() => {
 
     grouped[key].push(game);
   });
-  console.log(allGames);
-
 
   return  Object.keys(grouped).map((monthKey) => ({
     month: monthKey,
