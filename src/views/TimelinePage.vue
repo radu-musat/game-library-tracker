@@ -3,17 +3,18 @@ import { computed } from 'vue';
 import { useRecordStore } from '@/stores/record';
 import type { Product } from '@/types/product';
 
-type Game = (Product & { purchaseDate: string });
-type AllGames = Game[];
+type TimelineGame = Product & { purchaseDate: string };
+type TimelineGames = TimelineGame[];
 
 const recordStore = useRecordStore();
 const groupedGames = computed(() => {
-  const allGames: AllGames  = [];
-  recordStore.activeRecords.forEach((group) => {
-    group.items.forEach((game) => {
-      if (game.purchaseDate) {
-        allGames.push(game as Product & { purchaseDate: string });
-      }
+  const allGames: TimelineGames = [];
+  recordStore.activeRecords.forEach((purchase) => {
+    purchase.items.forEach((game) => {
+      allGames.push({
+        ...game,
+        purchaseDate: purchase.purchaseDate,
+      });
     });
   });
 
@@ -21,8 +22,7 @@ const groupedGames = computed(() => {
     return new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime();
   });
 
-
-  const grouped: Record<string, AllGames> = {};
+  const grouped: Record<string, TimelineGames> = {};
 
   allGames.forEach((game) => {
     const date = new Date(game.purchaseDate);
@@ -35,15 +35,12 @@ const groupedGames = computed(() => {
     grouped[key].push(game);
   });
 
-  const result = Object.keys(grouped).map((monthKey) => ({
+  return  Object.keys(grouped).map((monthKey) => ({
     month: monthKey,
     games: grouped[monthKey],
   }));
-
-  return result;
 });
 
-//console.log(allGames);
 </script>
 
 <template>
