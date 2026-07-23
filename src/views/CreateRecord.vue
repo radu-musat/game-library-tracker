@@ -8,9 +8,11 @@ import { useRecordStore } from '@/stores/record.ts';
 import { CircleCheck, CircleX, Trash2, Pencil } from '@lucide/vue';
 import utils from '@/utils/utils';
 import { useToastStore } from '@/stores/toast.ts';
+import 'cally';
 
 const recordStore = useRecordStore();
 const toastStore = useToastStore();
+const purchaseDate = ref('');
 
 const schema = toTypedSchema(
   yup.object({
@@ -43,43 +45,31 @@ const [purchased, purchasedAttrs] = defineField('isPurchased');
 const isCreateMode = ref(true);
 const editId = ref<string | null>(null);
 
-//TODO: REPLACE WITH DATEPICKER
-function getRandomYear() {
-  const min = 2000;
-  const max = 2026;
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-let randomMonthIndex = Math.floor(Math.random() * 12);
-let randomDate = new Date(getRandomYear(), randomMonthIndex, 1).toISOString().split('T')[0];
-
 const purchase: Ref<Purchase> = ref({
-  items: [
-    {
-      name: 'Daa',
-      price: 222,
-      platform: 'Steam',
-      purchaseDate: randomDate,
-      isMainQuest: true,
-      isPurchased: true,
-      id: crypto.randomUUID(),
-    },
-  ],
-  totalCost: 0,
   id: crypto.randomUUID(),
+  purchaseDate: '',
+  totalCost: 0,
+  items: [],
 });
 
 const totalCost = computed(() => purchase.value.items.reduce((acc, item) => acc + item.price, 0));
+const onDateChange = (e: Event) => {
+  const target = e.target as HTMLElement & { value: string };
+
+  purchaseDate.value = target.value;
+
+  const popover = document.getElementById('cally-popover1') as HTMLElement & {
+    hidePopover?: () => void;
+  };
+
+  popover.hidePopover?.();
+};
 
 const onSubmit = handleSubmit(() => {
-  //TODO: REPLACE WITH DATEPICKER
-  randomMonthIndex = Math.floor(Math.random() * 12);
-  randomDate = new Date(getRandomYear(), randomMonthIndex, 1).toISOString().split('T')[0];
-
   const recordData: Product = {
     name: name.value,
     price: price.value,
     platform: platform.value,
-    purchaseDate: randomDate,
     isMainQuest: mainQuest.value,
     isPurchased: purchased.value,
     id: crypto.randomUUID(),
@@ -128,9 +118,17 @@ const onEditSelect = (id: string) => {
 
   toastStore.showMessage(`Now editing ${name.value}`, 'info');
 };
+
 const addRecord = (): void => {
   recordStore.addRecord(purchase.value);
   toastStore.showMessage('Record added', 'success');
+
+  purchase.value = {
+    id: crypto.randomUUID(),
+    purchaseDate: '',
+    totalCost: 0,
+    items: [],
+  };
 };
 const { prettifyKey } = utils;
 </script>
@@ -155,7 +153,7 @@ const { prettifyKey } = utils;
                 :class="{ 'border-red-500 border': errors.name }"
                 id="name"
               />
-              <small class="text-red-500">{{ errors.name }}</small>
+              <small class="text-red-500" v-if="errors.name">{{ errors.name }}</small>
 
               <label class="label" for="price">Price</label>
               <input
@@ -166,7 +164,7 @@ const { prettifyKey } = utils;
                 v-bind="priceAttrs"
                 id="price"
               />
-              <small class="text-red-500">{{ errors.price }}</small>
+              <small class="text-red-500" v-if="errors.price">{{ errors.price }}</small>
 
               <label class="label">Platform</label>
               <input
@@ -176,12 +174,7 @@ const { prettifyKey } = utils;
                 v-model="platform"
                 v-bind="platformAttrs"
               />
-              <small class="text-red-500">{{ errors.platform }}</small>
-              <!--
-                TODO: ADD Datepicker calendar
-                https://daisyui.com/components/calendar/
-                https://github.com/uvarov-frontend/vanilla-calendar-pro
-                -->
+              <small class="text-red-500" v-if="errors.platform">{{ errors.platform }}</small>
             </fieldset>
             <fieldset class="fieldset pt-6">
               <div class="flex gap-1">
@@ -218,51 +211,81 @@ const { prettifyKey } = utils;
       <div class="card bg-base-100 shadow-2xl justify-between">
         <div class="grow">
           <div class="p-4 pb-0">Total cost: {{ totalCost }}</div>
+
+          <div class="p-4">
+            <label class="label" for="price">Purchase Date</label>
+            <div>
+              <button
+                popovertarget="cally-popover1"
+                class="input input-border"
+                id="cally1"
+                style="anchor-name: --cally1"
+                type="button"
+              >
+                {{ purchaseDate || 'Pick a date' }}
+              </button>
+
+              <div
+                popover
+                id="cally-popover1"
+                class="dropdown bg-base-100 rounded-box shadow-lg"
+                style="position-anchor: --cally1"
+              >
+                <calendar-date class="cally" @change="onDateChange">
+                  <calendar-month />
+                </calendar-date>
+              </div>
+            </div>
+          </div>
+
           <ul class="list max-h-60 overflow-auto">
             <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Purchase Record Products</li>
-            <li class="list-row" v-for="(purchaseItem, key) in purchase.items" :key="key">
-              <div>
-                <img
-                  class="size-10 rounded-box"
-                  src="https://img.daisyui.com/images/profile/demo/1@94.webp"
-                  :alt="`${purchaseItem.name} icon`"
-                />
-              </div>
-              <div>
-                <div>{{ purchaseItem.name }}</div>
-                <div class="flex gap-2 flex-wrap">
-                  <template v-for="(value, key) in purchaseItem" :key="key">
-                    <div
-                      class="flex gap-1 items-center text-xs"
-                      v-if="key !== 'name' && key !== 'id'"
-                    >
-                      <div class="uppercase font-semibold opacity-60">
-                        {{ prettifyKey(key, 'is') }} :
-                      </div>
-                      <span>
-                        <template v-if="typeof value === 'boolean'">
-                          <CircleCheck v-if="value" />
-                          <CircleX v-else />
-                        </template>
-                        <template v-else>
-                          {{ value }}
-                        </template>
-                      </span>
-                    </div>
-                  </template>
+            <template v-if="purchase.items.length">
+              <li class="list-row" v-for="(purchaseItem, key) in purchase.items" :key="key">
+                <div>
+                  <img
+                    class="size-10 rounded-box"
+                    src="https://img.daisyui.com/images/profile/demo/1@94.webp"
+                    :alt="`${purchaseItem.name} icon`"
+                  />
                 </div>
-              </div>
-              <div class="self-start pt-6 flex gap-2">
-                <Pencil class="cursor-pointer" @click.prevent="onEditSelect(purchaseItem.id)" />
-                <Trash2 class="cursor-pointer" @click.prevent="onDelete(purchaseItem.id)" />
-              </div>
-            </li>
+                <div>
+                  <div>{{ purchaseItem.name }}</div>
+                  <div class="flex gap-2 flex-wrap">
+                    <template v-for="(value, key) in purchaseItem" :key="key">
+                      <div
+                        class="flex gap-1 items-center text-xs"
+                        v-if="key !== 'name' && key !== 'id'"
+                      >
+                        <div class="uppercase font-semibold opacity-60">
+                          {{ prettifyKey(key, 'is') }} :
+                        </div>
+                        <span>
+                          <template v-if="typeof value === 'boolean'">
+                            <CircleCheck v-if="value" />
+                            <CircleX v-else />
+                          </template>
+                          <template v-else>
+                            {{ value }}
+                          </template>
+                        </span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+                <div class="self-start pt-6 flex gap-2">
+                  <Pencil class="cursor-pointer" @click.prevent="onEditSelect(purchaseItem.id)" />
+                  <Trash2 class="cursor-pointer" @click.prevent="onDelete(purchaseItem.id)" />
+                </div>
+              </li>
+            </template>
+            <li class="list-row" v-else>No products recorded</li>
           </ul>
         </div>
         <div class="p-4 mt-4">
           <button
             class="btn btn-neutral"
-            :disabled="!purchase.items.length || !isCreateMode"
+            :disabled="!purchase.items.length || !isCreateMode || !purchaseDate"
             @click.prevent="addRecord"
           >
             Add record
