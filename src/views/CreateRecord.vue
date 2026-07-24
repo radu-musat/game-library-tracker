@@ -55,9 +55,9 @@ let randomDate = new Date(getRandomYear(), randomMonthIndex, 1).toISOString().sp
 const purchase: Ref<Purchase> = ref({
   items: [
     {
-      name: 'Daa',
-      price: 222,
-      platform: 'Steam',
+      name: 'Diablo 4',
+      price: 60,
+      platform: 'Blizzard',
       purchaseDate: randomDate,
       isMainQuest: true,
       isPurchased: true,
