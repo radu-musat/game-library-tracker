@@ -3,7 +3,7 @@ import HomeView from '../views/old-examples/HomeView.vue';
 import HomePage from '@/views/HomePage.vue';
 import CurrentMonth from '@/views/CurrentMonth.vue';
 import CreateRecord from '@/views/CreateRecord.vue';
-import Timeline from '@/views/Timeline.vue';
+import TimelinePage from '@/views/TimelinePage.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,7 +21,7 @@ const router = createRouter({
     {
       path: '/timeline',
       name: 'Timeline',
-      component: Timeline,
+      component: TimelinePage,
     },
     {
       path: '/create',

@@ -4,44 +4,42 @@ import { useRecordStore } from '@/stores/record';
 import type { Product } from '@/types/product';
 import { Gamepad2, Monitor, Tv, Atom, Globe } from '@lucide/vue';
 
+type TimelineGame = Product & { purchaseDate: string };
+type TimelineGames = TimelineGame[];
+
 const recordStore = useRecordStore();
-//console.log('🔵 Component loaded');
 const groupedGames = computed(() => {
-  const allGames: (Product & {purchaseDate: string})[] = [];
-  //console.log('📦 Store data:', recordStore.activeRecords);
-  recordStore.activeRecords.forEach(group => {
-    group.items.forEach(game => {
-      if (game.purchaseDate) {
-        allGames.push(game as Product & { purchaseDate: string});
-      };
+  const allGames: TimelineGames = [];
+  recordStore.activeRecords.forEach((purchase) => {
+    purchase.items.forEach((game) => {
+      allGames.push({
+        ...game,
+        purchaseDate: purchase.purchaseDate,
+      });
     });
   });
-  //console.log('🟡 BEFORE SORT:', allGames.map(g => g.purchaseDate));
+
   allGames.sort((a, b) => {
     return new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime();
   });
-  //console.log('🟢 AFTER SORT:', allGames.map(g => g.purchaseDate));
 
-  const grouped: Record<string, (Product & { purchaseDate: string })[]> = {};
+  const grouped: Record<string, TimelineGames> = {};
 
-  allGames.forEach(game => {
-  const date = new Date(game.purchaseDate);
-  const key = date.toLocaleString('default', {month: 'long', year: 'numeric'});
+  allGames.forEach((game) => {
+    const date = new Date(game.purchaseDate);
+    const key = date.toLocaleString('default', { month: 'long', year: 'numeric' });
 
-  if (!grouped[key]) {
-    grouped[key] = [];
-  }
+    if (!grouped[key]) {
+      grouped[key] = [];
+    }
 
-  grouped[key].push(game);
+    grouped[key].push(game);
   });
 
-  const result = Object.keys(grouped).map(monthKey => ({
+  return  Object.keys(grouped).map((monthKey) => ({
     month: monthKey,
-    games: grouped[monthKey]
+    games: grouped[monthKey],
   }));
-  console.log('✅ Reached the end!');
-  console.log(result);
-  return result;
 });
 
 //console.log(allGames);
@@ -61,8 +59,10 @@ const getPlatformIcon = (platform: string) => {
 
 <template>
   <section class="px-3 pt-6 bg-gray-100 grow">
-    <h1 class="text-5xl mb-8 font-medium">Number of records: {{ recordStore.activeRecords.length }}</h1>
-    
+    <h1 class="text-5xl mb-8 font-medium">
+      Number of records: {{ recordStore.activeRecords.length }}
+    </h1>
+
     <ul class="timeline timeline-vertical">
       <!-- Loop 1: Months -->
       <li v-for="monthGroup in groupedGames" :key="monthGroup.month">
@@ -88,13 +88,13 @@ const getPlatformIcon = (platform: string) => {
             <div class="card-body">
               <h2 class="text-2xl font-bold">{{ monthGroup.month }}</h2>
               <p class="text-sm text-gray-500">{{ monthGroup.games?.length || 0 }} games</p>
-              
+
               <div class="divider"></div>
-              
+
               <!-- Loop 2: Games in this month -->
-              <div 
-                v-for="game in monthGroup.games" 
-                :key="game.id" 
+              <div
+                v-for="game in monthGroup.games"
+                :key="game.id"
                 class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"
               >
                 <div class="flex items-center gap-2">
