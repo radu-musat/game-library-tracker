@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useRecordStore } from '@/stores/record';
 import type { Product } from '@/types/product';
-import { Gamepad2, Monitor, Tv, Atom, Globe } from '@lucide/vue';
+import { Gamepad2, Monitor, Tv, Atom, Globe, type LucideIcon } from '@lucide/vue';
 
 type TimelineGame = Product & { purchaseDate: string };
 type TimelineGames = TimelineGame[];
@@ -36,7 +36,7 @@ const groupedGames = computed(() => {
     grouped[key].push(game);
   });
 
-  return  Object.keys(grouped).map((monthKey) => ({
+  return Object.keys(grouped).map((monthKey) => ({
     month: monthKey,
     games: grouped[monthKey],
   }));
@@ -45,16 +45,15 @@ const groupedGames = computed(() => {
 //console.log(allGames);
 
 const getPlatformIcon = (platform: string) => {
-  const map: Record<string, any> = {
-    'PS5': Gamepad2,
-    'Steam': Monitor,
-    'Xbox': Tv,
-    'Blizzard': Atom,
-    'GOG': Globe
-  }; 
+  const map: Record<string, LucideIcon> = {
+    PS5: Gamepad2,
+    Steam: Monitor,
+    Xbox: Tv,
+    Blizzard: Atom,
+    GOG: Globe,
+  };
   return map[platform] || Gamepad2;
 };
-
 </script>
 
 <template>
@@ -84,7 +83,9 @@ const getPlatformIcon = (platform: string) => {
 
         <!-- Card for this month -->
         <div class="timeline-end">
-          <div class="card bg-base-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.2)] transition-shadow duration-200 border border-gray-200 rounded-xl">
+          <div
+            class="card bg-base-100 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.2)] transition-shadow duration-200 border border-gray-200 rounded-xl"
+          >
             <div class="card-body">
               <h2 class="text-2xl font-bold">{{ monthGroup.month }}</h2>
               <p class="text-sm text-gray-500">{{ monthGroup.games?.length || 0 }} games</p>
@@ -98,7 +99,7 @@ const getPlatformIcon = (platform: string) => {
                 class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"
               >
                 <div class="flex items-center gap-2">
-                  <component :is="getPlatformIcon(game.platform)" class="w-4 h-4 text-gray-500"/>
+                  <component :is="getPlatformIcon(game.platform)" class="w-4 h-4 text-gray-500" />
                   <span>{{ game.name }}</span>
                   <span class="font-semibold text-green-600">£{{ game.price }}</span>
                 </div>
