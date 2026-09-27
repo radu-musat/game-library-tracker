@@ -5,13 +5,18 @@ import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/yup';
 import * as yup from 'yup';
 import { useRecordStore } from '@/stores/record.ts';
-import { CircleCheck, CircleX, Trash2, Pencil } from '@lucide/vue';
-import utils from '@/utils/utils';
 import { useToastStore } from '@/stores/toast.ts';
+import { useFundsStore } from '@/stores/funds.ts';
+import { CircleCheck, CircleX, Trash2, Pencil } from '@lucide/vue';
+import FundsWidget from '@/components/FundsWidget.vue';
+import utils from '@/utils/utils';
 import 'cally';
+import { storeToRefs } from 'pinia';
 
 const recordStore = useRecordStore();
 const toastStore = useToastStore();
+const fundsStore = useFundsStore();
+const { totalSpent } = storeToRefs(fundsStore);
 
 const schema = toTypedSchema(
   yup.object({
@@ -121,6 +126,9 @@ const addRecord = (): void => {
   recordStore.addRecord(purchase.value);
   toastStore.showMessage('Record added', 'success');
 
+  const totalFundsSpent = totalSpent.value + purchase.value.totalCost;
+  fundsStore.updateTotalSpent(totalFundsSpent);
+
   purchase.value = {
     id: crypto.randomUUID(),
     purchaseDate: '',
@@ -133,9 +141,12 @@ const { prettifyKey } = utils;
 
 <template>
   <section class="px-3 pt-6 bg-gray-100 grow">
-    <h1 class="text-5xl mb-8 font-medium">
-      {{ isCreateMode ? 'Create Record' : 'Edit Record Purchase' }}
-    </h1>
+    <div class="flex flex-wrap gap-5 mb-8 items-center">
+      <h1 class="text-5xl font-medium">
+        {{ isCreateMode ? 'Create Record' : 'Edit Record Purchase' }}
+      </h1>
+      <FundsWidget />
+    </div>
     <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2 rounded-box">
       <div class="card bg-base-100 shadow-2xl">
         <form class="w-full shrink-0 card-body" novalidate @submit.prevent="onSubmit">
@@ -160,6 +171,7 @@ const { prettifyKey } = utils;
                 placeholder="Price"
                 v-model="price"
                 v-bind="priceAttrs"
+                :class="{ 'border-red-500 border': errors.price }"
                 id="price"
               />
               <small class="text-red-500" v-if="errors.price">{{ errors.price }}</small>
@@ -170,6 +182,7 @@ const { prettifyKey } = utils;
                 class="input"
                 placeholder="Platform"
                 v-model="platform"
+                :class="{ 'border-red-500 border': errors.platform }"
                 v-bind="platformAttrs"
               />
               <small class="text-red-500" v-if="errors.platform">{{ errors.platform }}</small>
