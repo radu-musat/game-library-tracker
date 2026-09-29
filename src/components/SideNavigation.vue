@@ -2,14 +2,14 @@
 import { Calendar } from '@lucide/vue'
 import { House } from '@lucide/vue'
 import { CirclePlus } from '@lucide/vue'
-import { History } from '@lucide/vue'
 import { Timeline } from '@lucide/vue'
 </script>
 
 <template>
   <div class="flex relative">
     <!-- Sidebar -->
-    <aside class="h-full flex flex-col overflow-y-auto gap-2 py-6 px-2 bg-base-100 shadow-md">
+    <aside class="h-full w-full md:w-auto flex justify-around md:justify-start md:flex-col
+    overflow-y-auto gap-2 py-2 md:py-6 px-2 bg-base-100 shadow-md">
       <RouterLink :to="{ name: 'Home' }" class="btn">
         <House />
       </RouterLink>

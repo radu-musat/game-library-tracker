@@ -5,6 +5,8 @@ import CurrentMonth from '@/views/CurrentMonth.vue';
 import CreateRecord from '@/views/CreateRecord.vue';
 import TimelinePage from '@/views/TimelinePage.vue';
 
+
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -19,9 +21,18 @@ const router = createRouter({
       component: CurrentMonth,
     },
     {
-      path: '/timeline',
+      path: '/timeline/:year?',
       name: 'Timeline',
       component: TimelinePage,
+      beforeEnter: (to, from) => {
+        if (!to.params.year) {
+          return {
+            name: 'Timeline',
+            params: { year: new Date().getFullYear() },
+            replace: true,
+          };
+        }
+      },
     },
     {
       path: '/create',
