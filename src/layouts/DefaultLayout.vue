@@ -4,7 +4,7 @@ import SideNavigation from '@/components/SideNavigation.vue'
 </script>
 
 <template>
-  <main class="flex grow">
+  <main class="md:flex grow">
     <SideNavigation/>
     <div class="grow flex flex-col">
       <TopNavigation />

@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="navbar bg-base-100">
+  <div class="navbar gap-2 flex-col md:flex-row bg-base-100">
     <div class="flex-1">
       <a class="btn btn-ghost text-xl">GLT (game library tracker)</a>
     </div>

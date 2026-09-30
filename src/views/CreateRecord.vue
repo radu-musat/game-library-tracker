@@ -5,13 +5,18 @@ import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/yup';
 import * as yup from 'yup';
 import { useRecordStore } from '@/stores/record.ts';
-import { CircleCheck, CircleX, Trash2, Pencil } from '@lucide/vue';
-import utils from '@/utils/utils';
 import { useToastStore } from '@/stores/toast.ts';
+import { useFundsStore } from '@/stores/funds.ts';
+import { CircleCheck, CircleX, Trash2, Pencil } from '@lucide/vue';
+import FundsWidget from '@/components/FundsWidget.vue';
+import utils from '@/utils/utils';
 import 'cally';
+import { storeToRefs } from 'pinia';
 
 const recordStore = useRecordStore();
 const toastStore = useToastStore();
+const fundsStore = useFundsStore();
+const { monthlyTotalSpent } = storeToRefs(fundsStore);
 
 const schema = toTypedSchema(
   yup.object({
@@ -23,7 +28,6 @@ const schema = toTypedSchema(
       .min(0),
     platform: yup.string().required().min(3),
     isMainQuest: yup.boolean().required(),
-    isPurchased: yup.boolean().required(),
   }),
 );
 
@@ -31,7 +35,6 @@ const { errors, defineField, meta, handleSubmit, resetForm } = useForm<Product>(
   validationSchema: schema,
   initialValues: {
     isMainQuest: true,
-    isPurchased: true,
   },
 });
 
@@ -39,7 +42,6 @@ const [name, nameAttrs] = defineField('name');
 const [price, priceAttrs] = defineField('price');
 const [platform, platformAttrs] = defineField('platform');
 const [mainQuest, mainQuestAttrs] = defineField('isMainQuest');
-const [purchased, purchasedAttrs] = defineField('isPurchased');
 
 const isCreateMode = ref(true);
 const editId = ref<string | null>(null);
@@ -69,7 +71,6 @@ const onSubmit = handleSubmit(() => {
     price: price.value,
     platform: platform.value,
     isMainQuest: mainQuest.value,
-    isPurchased: purchased.value,
     id: crypto.randomUUID(),
   };
 
@@ -111,7 +112,6 @@ const onEditSelect = (id: string) => {
   price.value = editItem.price;
   platform.value = editItem.platform;
   mainQuest.value = editItem.isMainQuest;
-  purchased.value = editItem.isPurchased;
   editId.value = editItem.id;
 
   toastStore.showMessage(`Now editing ${name.value}`, 'info');
@@ -120,6 +120,14 @@ const onEditSelect = (id: string) => {
 const addRecord = (): void => {
   recordStore.addRecord(purchase.value);
   toastStore.showMessage('Record added', 'success');
+
+  const currentYear = new Date().getFullYear();
+  const purchaseYear = new Date(purchase.value.purchaseDate).getFullYear();
+
+  if (currentYear === purchaseYear) {
+    const totalFundsSpent = monthlyTotalSpent.value + purchase.value.totalCost;
+    fundsStore.updateTotalSpent(totalFundsSpent);
+  }
 
   purchase.value = {
     id: crypto.randomUUID(),
@@ -133,9 +141,12 @@ const { prettifyKey } = utils;
 
 <template>
   <section class="px-3 pt-6 bg-gray-100 grow">
-    <h1 class="text-5xl mb-8 font-medium">
-      {{ isCreateMode ? 'Create Record' : 'Edit Record Purchase' }}
-    </h1>
+    <div class="flex flex-wrap gap-5 mb-8 items-center">
+      <h1 class="text-5xl font-medium">
+        {{ isCreateMode ? 'Create Record' : 'Edit Record Purchase' }}
+      </h1>
+      <FundsWidget />
+    </div>
     <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-2 rounded-box">
       <div class="card bg-base-100 shadow-2xl">
         <form class="w-full shrink-0 card-body" novalidate @submit.prevent="onSubmit">
@@ -160,6 +171,7 @@ const { prettifyKey } = utils;
                 placeholder="Price"
                 v-model="price"
                 v-bind="priceAttrs"
+                :class="{ 'border-red-500 border': errors.price }"
                 id="price"
               />
               <small class="text-red-500" v-if="errors.price">{{ errors.price }}</small>
@@ -170,6 +182,7 @@ const { prettifyKey } = utils;
                 class="input"
                 placeholder="Platform"
                 v-model="platform"
+                :class="{ 'border-red-500 border': errors.platform }"
                 v-bind="platformAttrs"
               />
               <small class="text-red-500" v-if="errors.platform">{{ errors.platform }}</small>
@@ -183,16 +196,6 @@ const { prettifyKey } = utils;
                   name="Main-Quest"
                   v-model="mainQuest"
                   v-bind="mainQuestAttrs"
-                />
-              </div>
-              <div class="flex gap-1">
-                <label class="label">Owned game</label>
-                <input
-                  type="checkbox"
-                  class="checkbox"
-                  name="Main-Quest"
-                  v-model="purchased"
-                  v-bind="purchasedAttrs"
                 />
               </div>
             </fieldset>

@@ -2,7 +2,6 @@ export interface Product {
   name: string;
   price: number;
   platform: string;
-  isPurchased: boolean;
   isMainQuest: boolean;
   id: string;
 }
