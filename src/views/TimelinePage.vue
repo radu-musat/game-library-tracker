@@ -12,7 +12,7 @@ const years = ref<number[]>([]);
 onMounted(() => {
   years.value = [
     ...new Set(recordStore.activeRecords.map((r) => new Date(r.purchaseDate).getFullYear())),
-  ];
+  ].sort((a, b) => b - a);
   console.log(years.value);
 });
 </script>

@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { useFundsStore } from '@/stores/funds.ts';
+import { useRecordStore } from '@/stores/record.ts';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 const fundsStore = useFundsStore();
+const recordStore = useRecordStore();
+
 const {
   monthlyTotal,
-  totalSpent,
+  monthlyTotalSpent,
   monthlyRemaining,
   monthlyRemainingPercentage,
   monthlySpentPercentage,
 } = storeToRefs(fundsStore);
+const { totalSpentCurrentYear, lifeTimeTotalSpent } = storeToRefs(recordStore);
 
 const dateRange = computed(() => {
   const now = new Date();
@@ -43,8 +47,8 @@ const dateRange = computed(() => {
     </div>
 
     <div class="stat">
-      <div class="stat-title">Total Funds Spent</div>
-      <div class="stat-value">{{ totalSpent }}</div>
+      <div class="stat-title">Spent This Month</div>
+      <div class="stat-value">{{ monthlyTotalSpent }}</div>
       <div class="stat-desc">
         <div :class="monthlySpentPercentage <= 100 ? 'text-warning' : 'text-red-500'">
           ↗︎
@@ -53,7 +57,17 @@ const dateRange = computed(() => {
         </div>
       </div>
     </div>
+
+    <div class="stat">
+      <div class="stat-title">Total Spent Current Year</div>
+      <div class="stat-value">{{ totalSpentCurrentYear }}</div>
+      <div class="stat-desc font-bold text text-blue-500">$-USD</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">Lifetime Total Spent</div>
+      <div class="stat-value">{{ lifeTimeTotalSpent }}</div>
+      <div class="stat-desc font-bold text-blue-500">$-USD</div>
+    </div>
   </div>
 </template>
-
-<style scoped></style>

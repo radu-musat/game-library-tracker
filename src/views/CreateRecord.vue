@@ -16,7 +16,7 @@ import { storeToRefs } from 'pinia';
 const recordStore = useRecordStore();
 const toastStore = useToastStore();
 const fundsStore = useFundsStore();
-const { totalSpent } = storeToRefs(fundsStore);
+const { monthlyTotalSpent } = storeToRefs(fundsStore);
 
 const schema = toTypedSchema(
   yup.object({
@@ -28,7 +28,6 @@ const schema = toTypedSchema(
       .min(0),
     platform: yup.string().required().min(3),
     isMainQuest: yup.boolean().required(),
-    isPurchased: yup.boolean().required(),
   }),
 );
 
@@ -36,7 +35,6 @@ const { errors, defineField, meta, handleSubmit, resetForm } = useForm<Product>(
   validationSchema: schema,
   initialValues: {
     isMainQuest: true,
-    isPurchased: true,
   },
 });
 
@@ -44,7 +42,6 @@ const [name, nameAttrs] = defineField('name');
 const [price, priceAttrs] = defineField('price');
 const [platform, platformAttrs] = defineField('platform');
 const [mainQuest, mainQuestAttrs] = defineField('isMainQuest');
-const [purchased, purchasedAttrs] = defineField('isPurchased');
 
 const isCreateMode = ref(true);
 const editId = ref<string | null>(null);
@@ -74,7 +71,6 @@ const onSubmit = handleSubmit(() => {
     price: price.value,
     platform: platform.value,
     isMainQuest: mainQuest.value,
-    isPurchased: purchased.value,
     id: crypto.randomUUID(),
   };
 
@@ -116,7 +112,6 @@ const onEditSelect = (id: string) => {
   price.value = editItem.price;
   platform.value = editItem.platform;
   mainQuest.value = editItem.isMainQuest;
-  purchased.value = editItem.isPurchased;
   editId.value = editItem.id;
 
   toastStore.showMessage(`Now editing ${name.value}`, 'info');
@@ -126,8 +121,13 @@ const addRecord = (): void => {
   recordStore.addRecord(purchase.value);
   toastStore.showMessage('Record added', 'success');
 
-  const totalFundsSpent = totalSpent.value + purchase.value.totalCost;
-  fundsStore.updateTotalSpent(totalFundsSpent);
+  const currentYear = new Date().getFullYear();
+  const purchaseYear = new Date(purchase.value.purchaseDate).getFullYear();
+
+  if (currentYear === purchaseYear) {
+    const totalFundsSpent = monthlyTotalSpent.value + purchase.value.totalCost;
+    fundsStore.updateTotalSpent(totalFundsSpent);
+  }
 
   purchase.value = {
     id: crypto.randomUUID(),
@@ -196,16 +196,6 @@ const { prettifyKey } = utils;
                   name="Main-Quest"
                   v-model="mainQuest"
                   v-bind="mainQuestAttrs"
-                />
-              </div>
-              <div class="flex gap-1">
-                <label class="label">Owned game</label>
-                <input
-                  type="checkbox"
-                  class="checkbox"
-                  name="Main-Quest"
-                  v-model="purchased"
-                  v-bind="purchasedAttrs"
                 />
               </div>
             </fieldset>

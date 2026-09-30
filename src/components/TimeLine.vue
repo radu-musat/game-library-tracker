@@ -1,20 +1,53 @@
 <script setup lang="ts">
-import { Atom, CircleCheck, Gamepad2, Globe, type LucideIcon, Monitor, Tv } from '@lucide/vue';
+import {
+  Atom,
+  CircleCheck,
+  Gamepad2,
+  Globe,
+  Monitor,
+  Tv,
+  StarCheck,
+  StarMinus,
+  type LucideIcon,
+} from '@lucide/vue';
 import type { Product } from '@/types/product.ts';
 import { useRecordStore } from '@/stores/record.ts';
 import { computed } from 'vue';
 
-const props = defineProps<{ year: number }>();
+interface Props {
+  year?: number;
+  useDecoration?: boolean;
+  currentMonthOnly?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  year: Number(new Date().getFullYear()),
+  useDecoration: true,
+  currentMonthOnly: false,
+});
+
 type TimelineGame = Product & { purchaseDate: string };
 type TimelineGames = TimelineGame[];
 
 const recordStore = useRecordStore();
 const groupedGames = computed(() => {
-  const allGames: TimelineGames = recordStore.activeRecords.flatMap((record) => {
-    return record.items.map((game) => ({
-      ...game,
-      purchaseDate: record.purchaseDate,
-    }));
+  const targetRecords = recordStore.activeRecords.filter((record) => {
+    if (!props.currentMonthOnly) return true;
+
+    const recordDate = new Date(record.purchaseDate);
+    const now = new Date();
+    return (
+      recordDate.getMonth() === now.getMonth() && recordDate.getFullYear() === now.getFullYear()
+    );
+  });
+
+  const allGames: TimelineGames = targetRecords.flatMap((record) => {
+    return record.items.map((game) => {
+      return {
+        ...game,
+        purchaseDate: record.purchaseDate,
+      };
+    });
   });
 
   allGames.sort((a, b) => {
@@ -25,7 +58,8 @@ const groupedGames = computed(() => {
 
   allGames.forEach((game) => {
     const date = new Date(game.purchaseDate);
-    if (date.getFullYear() === Number(props.year)) {
+    const matchesYear = props.currentMonthOnly || date.getFullYear() === Number(props.year);
+    if (matchesYear) {
       const monthKey = date.toLocaleString('default', { month: 'long', year: 'numeric' });
       const dayKey = date.toLocaleString('default', {
         month: 'long',
@@ -53,6 +87,7 @@ const groupedGames = computed(() => {
     })),
   }));
 });
+
 const getPlatformIcon = (platform: string) => {
   const map: Record<string, LucideIcon> = {
     PS5: Gamepad2,
@@ -67,16 +102,17 @@ const getPlatformIcon = (platform: string) => {
 
 <template>
   <ul class="flex flex-col gap-4">
-    <li class="card bg-base-100">
-      <div class="card-body">
-        <h2> Total Records {{ }} </h2>
-      </div>
-    </li>
     <template v-for="(monthGroup, i) in groupedGames" :key="i">
       <!-- Loop 1: Months -->
-      <li class="md:grid grid-cols-[auto_1fr] gap-4 w-full items-start">
+      <li
+        class="md:grid gap-4 w-full items-start"
+        :class="[useDecoration ? 'grid-cols-[auto_1fr]' : 'grid-cols-[auto]']"
+      >
         <!-- Column 1: Timeline dot / checkmark -->
-        <div class="hidden md:flex md:flex-col justify-start items-center h-full">
+        <div
+          class="hidden md:flex md:flex-col justify-start items-center h-full"
+          v-if="useDecoration"
+        >
           <CircleCheck />
           <hr
             v-if="groupedGames.length > 1"
@@ -109,9 +145,15 @@ const getPlatformIcon = (platform: string) => {
                     <component :is="getPlatformIcon(game.platform)" class="w-4 h-4 text-gray-500" />
                     <span>{{ game.name }}</span>
                     <span class="font-semibold text-green-600">£{{ game.price }}</span>
+
                     <span class="font-semibold text-gray-500">
-                      - purchased on: {{ game.purchaseDate }}</span
-                    >
+                      - purchased on: {{ game.purchaseDate }}
+                    </span>
+                    <span class="font-semibold text-gray-500 flex gap-2">
+                      - main quest
+                      <StarCheck  v-if="game.isMainQuest" class="text-green-500"/>
+                      <StarMinus  v-else class="text-red-500"/>
+                    </span>
                   </div>
                 </div>
               </div>
