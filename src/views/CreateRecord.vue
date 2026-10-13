@@ -7,7 +7,7 @@ import * as yup from 'yup';
 import { useRecordStore } from '@/stores/record.ts';
 import { useToastStore } from '@/stores/toast.ts';
 import { useFundsStore } from '@/stores/funds.ts';
-import { CircleCheck, CircleX, Trash2, Pencil } from '@lucide/vue';
+import { CircleCheck, CircleX, Trash2, Pencil, Gamepad2 } from '@lucide/vue';
 import FundsWidget from '@/components/FundsWidget.vue';
 import utils from '@/utils/utils';
 import 'cally';
@@ -119,8 +119,6 @@ const onEditSelect = (id: string) => {
 
 const addRecord = (): void => {
   recordStore.addRecord(purchase.value);
-  toastStore.showMessage('Record added', 'success');
-
   const currentYear = new Date().getFullYear();
   const purchaseYear = new Date(purchase.value.purchaseDate).getFullYear();
 
@@ -129,6 +127,8 @@ const addRecord = (): void => {
     fundsStore.updateTotalSpent(totalFundsSpent);
   }
 
+  toastStore.showMessage('Record added', 'success');
+  recordStore.saveToStorage();
   purchase.value = {
     id: crypto.randomUUID(),
     purchaseDate: '',
@@ -243,12 +243,8 @@ const { prettifyKey } = utils;
             <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Purchase Record Products</li>
             <template v-if="purchase.items.length">
               <li class="list-row" v-for="(purchaseItem, key) in purchase.items" :key="key">
-                <div>
-                  <img
-                    class="size-10 rounded-box"
-                    src="https://img.daisyui.com/images/profile/demo/1@94.webp"
-                    :alt="`${purchaseItem.name} icon`"
-                  />
+                <div class="flex items-center">
+                  <Gamepad2 />
                 </div>
                 <div>
                   <div>{{ purchaseItem.name }}</div>

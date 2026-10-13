@@ -2,7 +2,6 @@
 import { storeToRefs } from 'pinia';
 import { useRecordStore } from '@/stores/record.ts';
 const recordStore = useRecordStore();
-
 const { lastRecord } = storeToRefs(recordStore);
 </script>
 
@@ -24,7 +23,7 @@ const { lastRecord } = storeToRefs(recordStore);
         <li>Total Cost: {{ lastRecord.totalCost }}</li>
       </ol>
       <p v-else>No record available</p>
-      <div class="justify-start card-actions" v-if="lastRecord">
+      <div class="justify-start card-actions mt-auto" v-if="lastRecord">
         <button class="btn btn-primary">View Details</button>
       </div>
     </div>

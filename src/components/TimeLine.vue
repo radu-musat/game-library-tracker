@@ -144,15 +144,15 @@ const getPlatformIcon = (platform: string) => {
                   <div class="flex items-center gap-2">
                     <component :is="getPlatformIcon(game.platform)" class="w-4 h-4 text-gray-500" />
                     <span>{{ game.name }}</span>
-                    <span class="font-semibold text-green-600">£{{ game.price }}</span>
+                    <span class="font-semibold text-green-600">€{{ game.price }}</span>
 
                     <span class="font-semibold text-gray-500">
                       - purchased on: {{ game.purchaseDate }}
                     </span>
                     <span class="font-semibold text-gray-500 flex gap-2">
                       - main quest
-                      <StarCheck  v-if="game.isMainQuest" class="text-green-500"/>
-                      <StarMinus  v-else class="text-red-500"/>
+                      <StarCheck v-if="game.isMainQuest" class="text-green-500" />
+                      <StarMinus v-else class="text-red-500" />
                     </span>
                   </div>
                 </div>

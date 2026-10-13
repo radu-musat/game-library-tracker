@@ -61,13 +61,13 @@ const dateRange = computed(() => {
     <div class="stat">
       <div class="stat-title">Total Spent Current Year</div>
       <div class="stat-value">{{ totalSpentCurrentYear }}</div>
-      <div class="stat-desc font-bold text text-blue-500">$-USD</div>
+      <div class="stat-desc font-bold text text-blue-500">€-EUR</div>
     </div>
 
     <div class="stat">
       <div class="stat-title">Lifetime Total Spent</div>
       <div class="stat-value">{{ lifeTimeTotalSpent }}</div>
-      <div class="stat-desc font-bold text-blue-500">$-USD</div>
+      <div class="stat-desc font-bold text-blue-500">€-EUR</div>
     </div>
   </div>
 </template>
