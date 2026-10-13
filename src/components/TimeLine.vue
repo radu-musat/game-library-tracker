@@ -106,12 +106,14 @@ const getPlatformIcon = (platform: string) => {
       <!-- Loop 1: Months -->
       <li
         class="md:grid gap-4 w-full items-start"
-        :class="[useDecoration ? 'grid-cols-[auto_1fr]' : 'grid-cols-[auto]']"
+        :class="[
+          useDecoration && groupedGames.length > 1 ? 'grid-cols-[auto_1fr]' : 'grid-cols-[auto]',
+        ]"
       >
         <!-- Column 1: Timeline dot / checkmark -->
         <div
           class="hidden md:flex md:flex-col justify-start items-center h-full"
-          v-if="useDecoration"
+          v-if="useDecoration && groupedGames.length > 1"
         >
           <CircleCheck />
           <hr
@@ -141,10 +143,15 @@ const getPlatformIcon = (platform: string) => {
                   :key="game.id"
                   class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"
                 >
-                  <div class="flex items-center gap-2">
-                    <component :is="getPlatformIcon(game.platform)" class="w-4 h-4 text-gray-500" />
-                    <span>{{ game.name }}</span>
-                    <span class="font-semibold text-green-600">€{{ game.price }}</span>
+                  <div class="flex flex-col md:flex-row gap-2">
+                    <div class="flex gap-2 items-center">
+                      <component
+                        :is="getPlatformIcon(game.platform)"
+                        class="w-4 h-4 text-gray-500"
+                      />
+                      <span>{{ game.name }}</span>
+                      <span class="font-semibold text-green-600">€{{ game.price }}</span>
+                    </div>
 
                     <span class="font-semibold text-gray-500">
                       - purchased on: {{ game.purchaseDate }}

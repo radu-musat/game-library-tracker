@@ -19,7 +19,7 @@ onMounted(() => {
 
 <template>
   <section class="px-3 pt-6 bg-gray-100 grow">
-    <h1 class="text-3xl md:text-5xl mb-4 md:mb-8 font-medium">Records</h1>
+    <h1 class="text-3xl md:text-5xl  md:mb-4 font-medium">Records</h1>
     <template v-if="years.length">
       <div role="tablist" class="tabs tabs-border mb-4">
         <router-link

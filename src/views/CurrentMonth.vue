@@ -12,7 +12,7 @@ const hasCurrentMonthRecord = recordStore.activeRecords.some(
 
 <template>
   <section class="px-3 pt-6 bg-gray-100 grow">
-    <h1 class="text-5xl mb-8 font-medium">Current Month</h1>
+    <h1 class="text-3xl md:text-5xl mb-4 md:mb-8 font-medium">Current Month</h1>
     <TimeLine :currentMonthOnly="true" :use-decoration="false" v-if="hasCurrentMonthRecord" />
     <p v-else>No data available for the current month</p>
   </section>
