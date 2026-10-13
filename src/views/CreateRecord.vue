@@ -65,6 +65,15 @@ const onDateChange = (e: Event) => {
   popover.hidePopover?.();
 };
 
+const maxDate = computed(() => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+});
+
 const onSubmit = handleSubmit(() => {
   const recordData: Product = {
     name: name.value,
@@ -142,7 +151,7 @@ const { prettifyKey } = utils;
 <template>
   <section class="px-3 pt-6 bg-gray-100 grow">
     <div class="flex flex-wrap gap-5 mb-8 items-center">
-      <h1 class="text-5xl font-medium">
+      <h1 class="text-3xl md:text-5xl md:mb-3 font-medium">
         {{ isCreateMode ? 'Create Record' : 'Edit Record Purchase' }}
       </h1>
       <FundsWidget />
@@ -232,7 +241,7 @@ const { prettifyKey } = utils;
                 class="dropdown bg-base-100 rounded-box shadow-lg"
                 style="position-anchor: --cally1"
               >
-                <calendar-date class="cally" @change="onDateChange">
+                <calendar-date class="cally" @change="onDateChange" :max="maxDate">
                   <calendar-month />
                 </calendar-date>
               </div>

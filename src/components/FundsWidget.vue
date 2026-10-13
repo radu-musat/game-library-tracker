@@ -26,16 +26,16 @@ const dateRange = computed(() => {
 </script>
 
 <template>
-  <div class="stats stats-vertical sm:stats-horizontal shadow bg-base-100">
+  <div class="stats stats-vertical md:stats-horizontal shadow bg-base-100 w-full">
     <div class="stat">
       <div class="stat-title">This Month's Budget</div>
-      <div class="stat-value">{{ monthlyTotal }}</div>
+      <div class="stat-value text-2xl lg:text-4xl">{{ monthlyTotal }}</div>
       <div class="stat-desc">{{ dateRange }}</div>
     </div>
 
     <div class="stat">
       <div class="stat-title">Remaining Funds</div>
-      <div class="stat-value">{{ monthlyRemaining }}</div>
+      <div class="stat-value text-2xl lg:text-4xl">{{ monthlyRemaining }}</div>
       <div
         class="stat-desc"
         :class="monthlyRemainingPercentage < 0 ? 'text-red-500' : 'text-success'"
@@ -48,7 +48,7 @@ const dateRange = computed(() => {
 
     <div class="stat">
       <div class="stat-title">Spent This Month</div>
-      <div class="stat-value">{{ monthlyTotalSpent }}</div>
+      <div class="stat-value text-2xl lg:text-4xl">{{ monthlyTotalSpent }}</div>
       <div class="stat-desc">
         <div :class="monthlySpentPercentage <= 100 ? 'text-warning' : 'text-red-500'">
           ↗︎
@@ -60,13 +60,13 @@ const dateRange = computed(() => {
 
     <div class="stat">
       <div class="stat-title">Total Spent Current Year</div>
-      <div class="stat-value">{{ totalSpentCurrentYear }}</div>
-      <div class="stat-desc font-bold text text-blue-500">€-EUR</div>
+      <div class="stat-value text-2xl lg:text-4xl">{{ totalSpentCurrentYear }}</div>
+      <div class="stat-desc font-bold text-blue-500">€-EUR</div>
     </div>
 
     <div class="stat">
       <div class="stat-title">Lifetime Total Spent</div>
-      <div class="stat-value">{{ lifeTimeTotalSpent }}</div>
+      <div class="stat-value text-2xl lg:text-4xl">{{ lifeTimeTotalSpent }}</div>
       <div class="stat-desc font-bold text-blue-500">€-EUR</div>
     </div>
   </div>

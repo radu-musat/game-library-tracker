@@ -19,18 +19,22 @@ const currentTimelineYear = computed(() => {
   <div class="flex relative">
     <!-- Sidebar -->
     <aside
-      class="h-full w-full md:w-auto flex justify-around md:justify-start md:flex-col overflow-y-auto gap-2 py-2 md:py-6 px-2 bg-base-100 shadow-md"
+      class="h-full w-full md:w-auto flex justify-center md:justify-start
+      md:flex-col overflow-y-auto gap-2 py-2 md:py-3 px-2 bg-base-100 shadow-md"
     >
-      <RouterLink :to="{ name: 'Home' }" class="btn">
+      <RouterLink :to="{ name: 'Home' }" class="btn btn-success text-white">
         <House />
       </RouterLink>
-      <RouterLink :to="{ name: 'CurrentMonth' }" class="btn">
+      <RouterLink :to="{ name: 'CurrentMonth' }" class="btn btn-success text-white">
         <Calendar />
       </RouterLink>
-      <RouterLink :to="{ name: 'Timeline', params: { year: currentTimelineYear } }" class="btn">
+      <RouterLink
+        :to="{ name: 'Timeline', params: { year: currentTimelineYear } }"
+        class="btn btn-success text-white"
+      >
         <Timeline />
       </RouterLink>
-      <RouterLink :to="{ name: 'Create' }" class="btn">
+      <RouterLink :to="{ name: 'Create' }" class="btn btn-success text-white">
         <CirclePlus />
       </RouterLink>
     </aside>
