@@ -1,70 +1,54 @@
-# game-library-journal
+# Game Library Tracker
 
-This template should help get you started developing with Vue 3 in Vite.
+> **Work in progress (WIP)** — This project is still being developed. Features and implementation details may change.
 
-## Recommended IDE Setup
+A small purchase tracker that started as a way to keep track of video game purchases. It can also be used to record other types of purchases.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Features
 
-## Recommended Browser Setup
+- Create, edit, and delete purchase records.
+- Add multiple items to a single purchase record.
+- Browse purchases in a timeline grouped by date.
+- Enter platforms or categories as free text.
+- Track a monthly budget and spending.
+- Export records and budget data to a JSON backup.
+- Import data from a JSON backup.
+- Persist data locally in the browser using Local Storage.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Tech stack
 
-## Type Support for `.vue` Imports in TS
+- Vue 3
+- TypeScript
+- Vite
+- Vue Router
+- Pinia
+- Tailwind CSS
+- daisyUI
+- vee-validate and Yup
+- Lucide icons
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Getting started
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
+Install dependencies:
 
 ```sh
-npm run build
-```
+pnpm install
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+Start the development server:
+pnpm dev
 
-```sh
-npm run test:unit
-```
 
-### Run End-to-End Tests with [Cypress](https://www.cypress.io/)
+Build the project:
+pnpm build
 
-```sh
-npm run test:e2e:dev
-```
 
-This runs the end-to-end tests against the Vite development server.
-It is much faster than the production build.
+Preview the production build:
+pnpm preview
 
-But it's still recommended to test the production build with `test:e2e` before deploying (e.g. in CI environments):
 
-```sh
-npm run build
-npm run test:e2e
-```
+Project status
+The application currently stores its data in the browser's Local Storage. JSON import and export are available for backing up and restoring records.
 
-### Lint with [ESLint](https://eslint.org/)
+Supabase integration is a work in progress. Cloud persistence and backend functionality are not yet part of the current application.
 
-```sh
-npm run lint
-```
+Because data is stored locally, clearing the browser's Local Storage will remove the locally saved records. Export a JSON backup regularly if you want to keep a separate copy of your data.
