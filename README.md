@@ -1,5 +1,5 @@
 # Game Library Tracker
-
+**[Live Demo](https://radu-musat.github.io/game-library-tracker/)**
 > **Work in progress (WIP)** — This project is still being developed. Features and implementation details may change.
 
 A small purchase tracker that started as a way to keep track of video game purchases. It can also be used to record other types of purchases.
